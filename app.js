@@ -1,44 +1,36 @@
 /* ════════════════════════════════════════════════════════════
    DRE CASA - APP.JS
-   Versão AGOSTO 2026 - Simplificada
+   AGOSTO 2026 - DADOS MANUAL
    ════════════════════════════════════════════════════════════ */
 
 // ────────────────────────────────────────────────────────────
-// SEED DATA - AGOSTO 2026 COM 3 CARTÕES
+// SEED DATA - PREENCHER COM SEUS DADOS
 // ────────────────────────────────────────────────────────────
 const SEED = {
   receitas: [
-    { label: 'Salário 15 Vi', values: [50000.0] },
-    { label: 'Vikatech', values: [25000.0] },
-    { label: 'Novas Receitas/aplicação', values: [8000.0] },
+    { label: 'Salário 15 Vi', values: [0] },
+    { label: 'Vikatech', values: [0] },
+    { label: 'Novas Receitas/aplicação', values: [0] },
   ],
   despesas: [
-    { label: 'Contador', values: [404.64], fixed: false },
-    { label: 'INSS Obra DARF', values: [533.24], fixed: false },
-    { label: 'Carro', values: [6196.29], fixed: true },
-    { label: 'Jardim', values: [600.0], fixed: false },
-    { label: 'St Monica - Cond', values: [1129.14], fixed: false },
-    { label: 'Cpfl - St Monica', values: [300.0], fixed: false },
-    { label: 'Azza', values: [103.0], fixed: false },
-    { label: 'Provisão Cartão', values: [20000.0], fixed: false },
-    { label: 'Financ Caixa', values: [9302.0], fixed: false },
-    { label: 'Faxina', values: [4000.0], fixed: false },
-    { label: 'Babá/escolinha', values: [2500.0], fixed: false },
-    { label: 'Piscina', values: [300.0], fixed: false },
+    { label: 'Contador', values: [0], fixed: false },
+    { label: 'INSS Obra DARF', values: [0], fixed: false },
+    { label: 'Carro', values: [0], fixed: true },
+    { label: 'Jardim', values: [0], fixed: false },
+    { label: 'St Monica - Cond', values: [0], fixed: false },
+    { label: 'Cpfl - St Monica', values: [0], fixed: false },
+    { label: 'Azza', values: [0], fixed: false },
+    { label: 'Provisão Cartão', values: [0], fixed: false },
+    { label: 'Financ Caixa', values: [0], fixed: false },
+    { label: 'Faxina', values: [0], fixed: false },
+    { label: 'Babá/escolinha', values: [0], fixed: false },
+    { label: 'Piscina', values: [0], fixed: false },
   ],
-  cartoesByMonth_seed: {
-    'Agosto 2026': 122330.63,
-  },
+  cartoesByMonth_seed: {},
   pix: [],
-  faturas_hist: {
-    'Agosto 2026': {
-      'Black Pontos Mastercard 7192': 4698.20,
-      'The One Mastercard 7710': 108962.59,
-      'Infinite Visa 5936': 8669.84,
-    },
-  },
+  faturas_hist: {},
   si_overrides: {
-    'Agosto 2026': 1254791.73,
+    'Agosto 2026': 0,
   },
 };
 
