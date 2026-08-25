@@ -1077,39 +1077,179 @@ body {
 }
 
 @media (max-width: 480px) {
+  /* TOPBAR */
+  .topbar {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   .topbar-logo {
     font-size: 16px;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .topbar-nav {
+    min-width: auto;
+    gap: 0;
+    flex: 1;
+    order: 3;
+    width: 100%;
   }
 
   .nav-btn {
-    padding: 6px 8px;
-    font-size: 11px;
+    padding: 8px 10px;
+    font-size: 12px;
+    flex: 1;
+    text-align: center;
+    border-radius: 4px;
+  }
+
+  .topbar-right {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
   .btn-small {
-    padding: 5px 10px;
-    font-size: 11px;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
   }
 
-  .dre-table {
-    font-size: 10px;
-  }
-
-  .dre-table td, .dre-table th {
-    padding: 4px 6px;
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px;
   }
 
   .sum-card {
-    min-width: 100px;
-    padding: 8px 10px;
+    min-width: auto;
+    padding: 12px;
+    border-radius: 6px;
+  }
+
+  .sum-label {
+    font-size: 11px;
   }
 
   .sum-value {
-    font-size: 14px;
+    font-size: 16px;
   }
 
-  .page {
+  /* CONTROLS */
+  .dre-controls {
+    flex-direction: column;
+    gap: 8px;
     padding: 10px;
+  }
+
+  .month-nav {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .mnav-label {
+    font-size: 13px;
+    padding: 0 8px;
+  }
+
+  /* TABELA */
+  .dre-table {
+    font-size: 12px;
+    border-collapse: collapse;
+  }
+
+  .dre-table td, .dre-table th {
+    padding: 6px 8px;
+    text-align: right;
+    border: 1px solid var(--border);
+  }
+
+  .dre-table th {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dre-table td:first-child, .dre-table th:first-child {
+    text-align: left;
+    max-width: 150px;
+    word-wrap: break-word;
+  }
+
+  /* PAGE */
+  .page {
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .dre-wrap {
+    padding: 0;
+    border-radius: 4px;
+  }
+
+  /* MODAIS */
+  .modal {
+    max-width: 90vw;
+    max-height: 80vh;
+  }
+
+  .modal-content {
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* PIX SIDEBAR */
+  .pix-sidebar {
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  .pix-month {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .pix-content {
+    max-width: 100%;
+  }
+
+  .pix-item {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .pix-valor {
+    font-size: 13px;
+  }
+
+  /* SCROLLBAR */
+  .scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 3px;
   }
 }
 
