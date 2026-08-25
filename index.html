@@ -13,13 +13,14 @@
 
     <!-- TOP BAR -->
     <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleMenu()" title="Menu">☰</button>
       <div class="topbar-logo">DRE<span>Casa</span></div>
-      <nav class="topbar-nav">
-        <button class="nav-btn active" onclick="showPage('dre')">DRE</button>
-        <button class="nav-btn" onclick="showPage('pix')">Pix</button>
-        <button class="nav-btn" onclick="showPage('cartoes-tab')">Cartões</button>
-        <button class="nav-btn" onclick="showPage('analise')">Análise</button>
-        <button class="nav-btn" onclick="showPage('faturas')">Faturas</button>
+      <nav class="topbar-nav" id="topbar-nav">
+        <button class="nav-btn active" onclick="showPage('dre');closeMenu()">DRE</button>
+        <button class="nav-btn" onclick="showPage('pix');closeMenu()">Pix</button>
+        <button class="nav-btn" onclick="showPage('cartoes-tab');closeMenu()">Cartões</button>
+        <button class="nav-btn" onclick="showPage('analise');closeMenu()">Análise</button>
+        <button class="nav-btn" onclick="showPage('faturas');closeMenu()">Faturas</button>
       </nav>
       <div class="topbar-right">
         <div style="display:flex;align-items:center;gap:5px;margin-right:4px;" title="Tema">
@@ -36,6 +37,21 @@
         <button class="btn-small" onclick="importJSON()">↑ Restaurar</button>
         <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
         <button class="btn-small btn-danger" onclick="clearAllData()">⚠ Limpar</button>
+      </div>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="mobile-menu-content">
+        <button class="mobile-menu-item" onclick="showPage('dre');closeMenu()">DRE</button>
+        <button class="mobile-menu-item" onclick="showPage('pix');closeMenu()">Pix</button>
+        <button class="mobile-menu-item" onclick="showPage('cartoes-tab');closeMenu()">Cartões</button>
+        <button class="mobile-menu-item" onclick="showPage('analise');closeMenu()">Análise</button>
+        <button class="mobile-menu-item" onclick="showPage('faturas');closeMenu()">Faturas</button>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <button class="mobile-menu-item" onclick="exportJSON();closeMenu()">↓ Backup</button>
+        <button class="mobile-menu-item" onclick="importJSON();closeMenu()">↑ Restaurar</button>
+        <button class="mobile-menu-item" onclick="clearAllData();closeMenu()">⚠ Limpar</button>
       </div>
     </div>
 

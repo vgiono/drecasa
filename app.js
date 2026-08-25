@@ -58,6 +58,17 @@ let charts = {};
 // Modal state
 let modalAction = null;
 
+// Menu state
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open');
+}
+
+function closeMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.remove('open');
+}
+
 function loadState() {
   const s = localStorage.getItem('drecasa_v5');
   if (s) {
