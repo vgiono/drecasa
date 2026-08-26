@@ -4,6 +4,113 @@
    ════════════════════════════════════════════════════════════ */
 
 // ────────────────────────────────────────────────────────────
+// LOGIN & AUTHENTICATION
+// ────────────────────────────────────────────────────────────
+
+// Credenciais padrão (hash SHA-256)
+const DEFAULT_USER = 'admin';
+const DEFAULT_PASS_HASH = '8d969eef6ecad3c29a3a873fba5e18a459e8885e7c2b6a0d43d92f43fa0aac60'; // 123456
+
+// Verificar autenticação ao carregar
+function checkAuth() {
+  const session = localStorage.getItem('drecasa_session');
+  if (!session) {
+    showLoginScreen();
+    return;
+  }
+  
+  const parsed = JSON.parse(session);
+  const now = Date.now();
+  
+  // Verificar se expirou (7 dias = 604800000 ms)
+  if (now - parsed.timestamp > 604800000) {
+    logout();
+    return;
+  }
+  
+  showAppScreen();
+}
+
+function showLoginScreen() {
+  document.getElementById('login-container').style.display = 'flex';
+  document.getElementById('app-container').style.display = 'none';
+}
+
+function showAppScreen() {
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('app-container').style.display = 'flex';
+}
+
+// SHA-256 hash function
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+// Handle login
+async function handleLogin(e) {
+  e.preventDefault();
+  
+  const user = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  const remember = document.getElementById('login-remember').checked;
+  
+  // Validar usuário
+  if (user !== DEFAULT_USER) {
+    showLoginError('Usuário inválido');
+    return;
+  }
+  
+  // Calcular hash da senha
+  const passHash = await sha256(pass);
+  
+  if (passHash !== DEFAULT_PASS_HASH) {
+    showLoginError('Senha incorreta');
+    return;
+  }
+  
+  // Login bem-sucedido
+  const session = {
+    user: user,
+    token: Math.random().toString(36).substr(2),
+    timestamp: Date.now(),
+    remember: remember
+  };
+  
+  localStorage.setItem('drecasa_session', JSON.stringify(session));
+  
+  // Limpar form
+  document.getElementById('login-form').reset();
+  document.getElementById('login-error').style.display = 'none';
+  
+  // Mostrar app
+  showAppScreen();
+}
+
+function showLoginError(msg) {
+  const error = document.getElementById('login-error');
+  error.textContent = msg;
+  error.style.display = 'block';
+  setTimeout(() => {
+    error.style.display = 'none';
+  }, 3000);
+}
+
+function logout() {
+  localStorage.removeItem('drecasa_session');
+  showLoginScreen();
+  document.getElementById('login-form').reset();
+}
+
+// Chamar verificação de auth ao carregar página
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(checkAuth, 100);
+});
+
+// ────────────────────────────────────────────────────────────
 // SEED DATA - PREENCHER COM SEUS DADOS
 // ────────────────────────────────────────────────────────────
 const SEED = {

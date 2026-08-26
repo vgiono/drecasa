@@ -9,19 +9,68 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-  <div class="app">
+  <!-- LOGIN SCREEN -->
+  <div class="login-container" id="login-container">
+    <div class="login-box">
+      <div class="login-logo">DRE<span>Casa</span></div>
+      <div class="login-title">Acesso Seguro</div>
+      <div class="login-subtitle">Seus dados financeiros protegidos</div>
+      
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Usuário</label>
+          <input type="text" id="login-user" placeholder="seu_usuario" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="login-pass" placeholder="••••••" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="login-remember">
+            <span>Lembrar por 7 dias</span>
+          </label>
+        </div>
+        
+        <button type="submit" class="login-btn">Entrar</button>
+      </form>
+      
+      <div id="login-error" class="login-error" style="display:none;"></div>
+      
+      <div class="login-footer">
+        <small>Credenciais padrão: admin / 123456</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (HIDDEN UNTIL LOGIN) -->
+  <div class="app" id="app-container" style="display:none;">
+
+    <!-- SIDEBAR MENU -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">D</div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-btn active" onclick="showPage('dre')" title="DRE">📊</button>
+        <button class="sidebar-btn" onclick="showPage('pix')" title="PIX">💸</button>
+        <button class="sidebar-btn" onclick="showPage('cartoes-tab')" title="Cartões">💳</button>
+        <button class="sidebar-btn" onclick="showPage('analise')" title="Análise">📈</button>
+        <button class="sidebar-btn" onclick="showPage('faturas')" title="Faturas">📄</button>
+      </nav>
+      <div class="sidebar-actions">
+        <button class="sidebar-btn" onclick="exportJSON()" title="Backup">💾</button>
+        <button class="sidebar-btn" onclick="importJSON()" title="Restaurar">📂</button>
+        <button class="sidebar-btn" onclick="clearAllData()" title="Limpar">🗑️</button>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;width:80%;">
+        <button class="sidebar-btn" onclick="logout()" title="Sair">🚪</button>
+      </div>
+    </div>
 
     <!-- TOP BAR -->
     <div class="topbar">
-      <button class="hamburger-btn" onclick="toggleMenu()" title="Menu">☰</button>
       <div class="topbar-logo">DRE<span>Casa</span></div>
-      <nav class="topbar-nav" id="topbar-nav">
-        <button class="nav-btn active" onclick="showPage('dre');closeMenu()">DRE</button>
-        <button class="nav-btn" onclick="showPage('pix');closeMenu()">Pix</button>
-        <button class="nav-btn" onclick="showPage('cartoes-tab');closeMenu()">Cartões</button>
-        <button class="nav-btn" onclick="showPage('analise');closeMenu()">Análise</button>
-        <button class="nav-btn" onclick="showPage('faturas');closeMenu()">Faturas</button>
-      </nav>
+      <div class="topbar-center" id="mnav-label"></div>
       <div class="topbar-right">
         <div style="display:flex;align-items:center;gap:5px;margin-right:4px;" title="Tema">
           <span style="font-size:11px;color:var(--text3)">tema</span>
@@ -33,27 +82,10 @@
           <button onclick="setTheme('light')"  title="Claro"    class="theme-btn" style="background:#f0f4f8;"></button>
         </div>
         <span class="badge-save" id="badge-save">● Salvo</span>
-        <button class="btn-small" onclick="exportJSON()">↓ Backup</button>
-        <button class="btn-small" onclick="importJSON()">↑ Restaurar</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
-        <button class="btn-small btn-danger" onclick="clearAllData()">⚠ Limpar</button>
       </div>
     </div>
 
-    <!-- MOBILE MENU -->
-    <div class="mobile-menu" id="mobile-menu">
-      <div class="mobile-menu-content">
-        <button class="mobile-menu-item" onclick="showPage('dre');closeMenu()">DRE</button>
-        <button class="mobile-menu-item" onclick="showPage('pix');closeMenu()">Pix</button>
-        <button class="mobile-menu-item" onclick="showPage('cartoes-tab');closeMenu()">Cartões</button>
-        <button class="mobile-menu-item" onclick="showPage('analise');closeMenu()">Análise</button>
-        <button class="mobile-menu-item" onclick="showPage('faturas');closeMenu()">Faturas</button>
-        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-        <button class="mobile-menu-item" onclick="exportJSON();closeMenu()">↓ Backup</button>
-        <button class="mobile-menu-item" onclick="importJSON();closeMenu()">↑ Restaurar</button>
-        <button class="mobile-menu-item" onclick="clearAllData();closeMenu()">⚠ Limpar</button>
-      </div>
-    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
 
     <div class="main">
 
@@ -173,6 +205,8 @@
       </div>
     </div>
   </div>
+
+  </div> <!-- fechamento app-container -->
 
   <!-- MODAL DE ALERTA -->
   <div id="modal-alert" class="modal" style="display:none;">
