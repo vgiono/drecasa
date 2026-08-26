@@ -8,8 +8,8 @@
 // ────────────────────────────────────────────────────────────
 
 // Credenciais padrão (hash SHA-256)
-const DEFAULT_USER = 'admin';
-const DEFAULT_PASS_HASH = '8d969eef6ecad3c29a3a873fba5e18a459e8885e7c2b6a0d43d92f43fa0aac60'; // 123456
+const DEFAULT_USER = 'vgiono';
+const DEFAULT_PASS_HASH = 'a1211c2944d86bef22e68890c2a359f2b6467df013091b124a513485fc610697'; // Giono07834!0
 
 // Verificar autenticação ao carregar
 function checkAuth() {
