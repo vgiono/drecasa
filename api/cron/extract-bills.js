@@ -5,7 +5,7 @@ const { findBillEmails } = require('../utils/gmail');
 const { extractBillValue } = require('../utils/claude');
 const { notifyBillUpdate } = require('../utils/telegram');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     console.log('🚀 Iniciando extração de faturas...');
 
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       message: error.message
     });
   }
-}
+};
 
 async function updateDRECasa(updates) {
   try {

@@ -1,5 +1,5 @@
 // OAuth Callback - Recebe autorização do Google
-const { google } = require('googleapis');  // ← Mude import para require
+const { google } = require('googleapis');
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
