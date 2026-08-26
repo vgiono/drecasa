@@ -1,5 +1,5 @@
 // OAuth Callback - Recebe autorização do Google
-import { google } from 'googleapis';
+const { google } = require('googleapis');  // ← Mude import para require
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -7,7 +7,7 @@ const oauth2Client = new google.auth.OAuth2(
   `${process.env.VERCEL_URL || 'http://localhost:3000'}/api/auth/callback`
 );
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     const { code } = req.query;
 
@@ -24,10 +24,6 @@ export default async function handler(req, res) {
     console.log('✅ OAuth autorizado com sucesso!');
     console.log(`Refresh Token: ${refreshToken}`);
 
-    // Aqui você deve guardar o refresh token de forma segura
-    // Por enquanto, retornamos um JSON
-    // Você pode usar Vercel KV Store ou outro serviço
-
     return res.status(200).json({
       success: true,
       message: 'Gmail autorizado com sucesso!',
@@ -42,4 +38,4 @@ export default async function handler(req, res) {
       message: error.message
     });
   }
-}
+};
