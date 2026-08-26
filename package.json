@@ -1,0 +1,19 @@
+{
+  "name": "drecasa-auto",
+  "version": "1.0.0",
+  "description": "DRE Casa - Auto Bill Extractor with Claude & Gmail",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build needed for serverless'"
+  },
+  "dependencies": {
+    "googleapis": "^118.0.0",
+    "google-auth-library": "^9.6.3",
+    "@anthropic-ai/sdk": "^0.20.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
