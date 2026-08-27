@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs@24"
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/extract-bills",
