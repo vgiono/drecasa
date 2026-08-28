@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generated": "2026-08-28",
   "months": [
     "Agosto 2026",
@@ -300,7 +300,14 @@
       "fixed": false
     }
   ],
-  "pix": [],
+  "pix": [
+    {
+      "mes": "Agosto 2026",
+      "dia": 28,
+      "valor": 800.0,
+      "descricao": "Beto - Porta"
+    }
+  ],
   "faturas_hist": {},
   "si_overrides": {
     "Agosto 2026": 1254791.73
