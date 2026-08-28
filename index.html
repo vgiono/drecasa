@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DRE Casa</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DRE Casa</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-  <!-- LOGIN SCREEN -->
-  <div class="login-container" id="login-container">
+
+<div class="login-container" id="login-container">
     <div class="login-box">
       <div class="login-logo">DRE<span>Casa</span></div>
       <div class="login-title">Acesso Seguro</div>
@@ -46,181 +46,233 @@
   </div>
 
   <!-- MAIN APP (HIDDEN UNTIL LOGIN) -->
-  <div class="app" id="app-container" style="display:none;">
+  
+<div class="app" id="app-container" style="display:none;">
 
-    <!-- SIDEBAR MENU -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-logo">D</div>
-      <nav class="sidebar-nav">
-        <button class="sidebar-btn active" onclick="showPage('dre')" title="DRE">📊</button>
-        <button class="sidebar-btn" onclick="showPage('pix')" title="PIX">💸</button>
-        <button class="sidebar-btn" onclick="showPage('cartoes-tab')" title="Cartões">💳</button>
-        <button class="sidebar-btn" onclick="showPage('analise')" title="Análise">📈</button>
-        <button class="sidebar-btn" onclick="showPage('faturas')" title="Faturas">📄</button>
-      </nav>
-      <div class="sidebar-actions">
-        <button class="sidebar-btn" onclick="exportJSON()" title="Backup">💾</button>
-        <button class="sidebar-btn" onclick="importJSON()" title="Restaurar">📂</button>
-        <button class="sidebar-btn" onclick="clearAllData()" title="Limpar">🗑️</button>
-        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;width:80%;">
-        <button class="sidebar-btn" onclick="logout()" title="Sair">🚪</button>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">DRE<span>Casa</span></div>
+    <nav class="topbar-nav">
+      <button class="nav-btn active" onclick="showPage('dre')">DRE</button>
+      <button class="nav-btn" onclick="showPage('pix')">Pix</button>
+      <button class="nav-btn" onclick="showPage('cartoes-tab')">Cartões</button>
+      <button class="nav-btn" onclick="showPage('analise')">Análise</button>
+      <button class="nav-btn" onclick="showPage('faturas')">Faturas</button>
+    </nav>
+    <div class="topbar-right">
+      <div style="display:flex;align-items:center;gap:5px;margin-right:4px;" title="Tema">
+        <span style="font-size:11px;color:var(--text3)">tema</span>
+        <button onclick="setTheme('dark')"   title="Escuro"   style="width:14px;height:14px;border-radius:50%;background:#0e1117;border:2px solid #3b82f6;cursor:pointer;padding:0;"></button>
+        <button onclick="setTheme('ocean')"  title="Oceano"   style="width:14px;height:14px;border-radius:50%;background:#1b2e42;border:2px solid #38b2f8;cursor:pointer;padding:0;"></button>
+        <button onclick="setTheme('aurora')" title="Aurora"   style="width:14px;height:14px;border-radius:50%;background:#131f30;border:2px solid #34d399;cursor:pointer;padding:0;"></button>
+        <button onclick="setTheme('plum')"   title="Ameixa"   style="width:14px;height:14px;border-radius:50%;background:#1e1330;border:2px solid #c084fc;cursor:pointer;padding:0;"></button>
+        <button onclick="setTheme('ember')"  title="Brasa"    style="width:14px;height:14px;border-radius:50%;background:#261508;border:2px solid #fb923c;cursor:pointer;padding:0;"></button>
+        <button onclick="setTheme('light')"  title="Claro"    style="width:14px;height:14px;border-radius:50%;background:#f0f4f8;border:2px solid #2563eb;cursor:pointer;padding:0;"></button>
       </div>
+      <span class="badge-save" id="badge-save">● Salvo</span>
+      <button class="btn-small" onclick="exportJSON()">↓ Backup</button>
+      <button class="btn-small" onclick="importJSON()">↑ Restaurar</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
+      <button class="btn-small" style="color:var(--red);border-color:rgba(239,68,68,0.3)"
+        onclick="if(confirm('Apagar todos os dados e recarregar?')){localStorage.removeItem('drecasa_v4');location.reload();}">
+        ⚠ Limpar</button>
     </div>
+  </div>
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="topbar-logo">DRE<span>Casa</span></div>
-      <div class="topbar-center" id="mnav-label"></div>
-      <div class="topbar-right">
-        <div style="display:flex;align-items:center;gap:5px;margin-right:4px;" title="Tema">
-          <span style="font-size:11px;color:var(--text3)">tema</span>
-          <button onclick="setTheme('dark')"   title="Escuro"   class="theme-btn" style="background:#0e1117;"></button>
-          <button onclick="setTheme('ocean')"  title="Oceano"   class="theme-btn" style="background:#1b2e42;"></button>
-          <button onclick="setTheme('aurora')" title="Aurora"   class="theme-btn" style="background:#131f30;"></button>
-          <button onclick="setTheme('plum')"   title="Ameixa"   class="theme-btn" style="background:#1e1330;"></button>
-          <button onclick="setTheme('ember')"  title="Brasa"    class="theme-btn" style="background:#261508;"></button>
-          <button onclick="setTheme('light')"  title="Claro"    class="theme-btn" style="background:#f0f4f8;"></button>
+  <div class="main">
+
+    <!-- DRE -->
+    <div class="page active" id="page-dre">
+      <div class="summary-bar" id="dre-summary"></div>
+      <div class="dre-controls">
+        <div class="month-nav">
+          <button class="mnav-btn" onclick="shiftView(-1)">‹</button>
+          <span class="mnav-label" id="mnav-label"></span>
+          <button class="mnav-btn" onclick="shiftView(1)">›</button>
         </div>
-        <span class="badge-save" id="badge-save">● Salvo</span>
+        <button class="btn-small" onclick="setVisibleCols(6)">6 meses</button>
+        <button class="btn-small" onclick="setVisibleCols(12)">12 meses</button>
+        <button class="btn-small" onclick="showAllMonths()">Todos</button>
+        <button class="btn-small primary" onclick="addMonth()">+ Mês</button>
+      </div>
+      <div class="dre-wrap scrollbar">
+        <table class="dre-table" id="dre-table"></table>
       </div>
     </div>
 
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
+    <!-- PIX -->
+    <div class="page" id="page-pix">
+      <div class="pix-layout">
+        <div class="pix-sidebar scrollbar" id="pix-sidebar"></div>
+        <div class="pix-content scrollbar" id="pix-content"></div>
+      </div>
+    </div>
 
-    <div class="main">
+    <!-- ANÁLISE -->
+    <div class="page" id="page-analise">
+      <div class="analise-layout scrollbar">
+        <div class="analise-grid" id="analise-grid"></div>
+      </div>
+    </div>
 
-      <!-- DRE -->
-      <div class="page active" id="page-dre">
-        <div class="summary-bar" id="dre-summary"></div>
-        <div class="dre-controls">
-          <div class="month-nav">
-            <button class="mnav-btn" onclick="shiftView(-1)">‹</button>
-            <span class="mnav-label" id="mnav-label"></span>
-            <button class="mnav-btn" onclick="shiftView(1)">›</button>
+    <!-- CARTÕES / PARCELAMENTOS -->
+    <div class="page" id="page-cartoes-tab" style="flex:1;min-height:0;flex-direction:column;overflow:hidden;">
+      <div style="padding:14px 20px 10px;flex-shrink:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+          <div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:2px;">Cartões &amp; Parcelamentos</div>
+            <div style="font-size:12px;color:var(--text3)">Visão de todas as compras parceladas com projeção futura</div>
           </div>
-          <button class="btn-small" onclick="setVisibleCols(6)">6 meses</button>
-          <button class="btn-small" onclick="setVisibleCols(12)">12 meses</button>
-          <button class="btn-small" onclick="showAllMonths()">Todos</button>
-          <button class="btn-small primary" onclick="addMonth()">+ Mês</button>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span id="cf-count" style="font-size:12px;color:var(--text3)"></span>
+            <button class="btn-small primary" onclick="showPage('faturas')">+ Carregar fatura</button>
+          </div>
         </div>
-        <div class="dre-wrap scrollbar">
-          <table class="dre-table" id="dre-table"></table>
-        </div>
-      </div>
-
-      <!-- PIX -->
-      <div class="page" id="page-pix">
-        <div class="pix-layout">
-          <div class="pix-sidebar scrollbar" id="pix-sidebar"></div>
-          <div class="pix-content scrollbar" id="pix-content"></div>
+        <!-- Filtro simples -->
+        <div style="display:flex;gap:8px;align-items:center;padding:8px 0;">
+          <input id="cf-search" type="text" placeholder="Buscar..." oninput="renderCartoesParcelas()"
+            style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;width:180px;font-family:var(--font);">
+          <button class="btn-small" onclick="document.getElementById('cf-search').value='';renderCartoesParcelas();">✕</button>
         </div>
       </div>
-
-      <!-- ANÁLISE -->
-      <div class="page" id="page-analise">
-        <div class="analise-layout scrollbar">
-          <div class="analise-grid" id="analise-grid"></div>
+      <div class="dre-wrap scrollbar" style="flex:1;padding:0 20px 20px;">
+        <div id="cartoes-summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;"></div>
+        <table class="dre-table" id="cartoes-table" style="min-width:600px;margin-bottom:2rem;"></table>
+        <div id="cartoes-avista-section" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:600;color:var(--text2)">Lançamentos à vista — fatura atual</div>
+            <div id="cartoes-avista-total" style="font-family:var(--mono);font-size:13px;font-weight:600;"></div>
+          </div>
+          <table class="dre-table" id="cartoes-avista-table" style="min-width:400px;"></table>
         </div>
       </div>
+    </div>
 
-      <!-- CARTÕES / PARCELAMENTOS -->
-      <div class="page" id="page-cartoes-tab">
-        <div style="padding:14px 20px 10px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-            <div>
-              <div style="font-size:15px;font-weight:600;margin-bottom:2px;">Cartões &amp; Parcelamentos</div>
-              <div style="font-size:12px;color:var(--text3)">Visão de todas as compras parceladas com projeção futura</div>
+    <!-- FATURAS -->
+    <div class="page" id="page-faturas" style="flex:1;min-height:0;overflow-y:auto;">
+      <div id="ft-upload-wrap" style="padding:20px 20px 0;">
+
+  <h1>💳 Analisador de Faturas <span>Itaú · até 3 cartões</span></h1>
+
+  <!-- Upload -->
+  <div class="upload-zone" id="ft-drop-zone" onclick="document.getElementById('ft-file-input').click()">
+    <div class="upload-icon">📂</div>
+    <div class="upload-title">Arraste até 3 faturas aqui</div>
+    <div class="upload-sub">ou clique para selecionar — .xlsx ou .csv do Itaú</div>
+  </div>
+  <input type="file" id="ft-file-input" accept=".xls,.xlsx,.csv" multiple style="display:none">
+  <div class="file-list" id="ft-file-list"></div>
+  <div class="btn-row">
+    <button class="btn-primary" id="ft-btn-process" disabled onclick="ft_processAll()">Analisar faturas</button>
+    <button class="btn-ai" id="ft-btn-ai" onclick="ft_classifyAllWithAI()">✦ Classificar com IA</button>
+  </div>
+
+  <div class="status" id="ft-status">
+    <span class="spinner"></span>
+    <span id="ft-status-msg"></span>
+    <div class="progress-track" id="ft-progress-track" style="display:none"><div class="progress-fill" id="ft-progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Results -->
+      
+      <button id="ft-back-btn" onclick="ft_resetUpload()" style="display:none;align-items:center;gap:6px;background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;margin:10px 20px;font-family:var(--font);">← Nova análise</button>
+    </div>
+<div id="ft-results" class="hidden">
+    <div class="metrics" id="ft-metrics"></div>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="ft_switchTab('cat')">Categorias</button>
+      <button class="tab" onclick="ft_switchTab('visao')">Visão geral</button>
+      <button class="tab" onclick="ft_switchTab('cartoes')">Por cartão</button>
+      <button class="tab" onclick="ft_switchTab('revisar')">Revisar <span class="badge warn" id="ft-badge-revisar">0</span></button>
+      <button class="tab" onclick="ft_switchTab('outros')">Não identificados <span class="badge danger" id="ft-badge-outros">0</span></button>
+      <button class="tab" onclick="ft_switchTab('lanc')">Lançamentos</button>
+      <button class="tab" onclick="ft_switchTab('export')">Exportar</button>
+    </div>
+
+    <!-- Categorias -->
+    <div class="tab-content active" id="ft-tab-cat">
+      <div class="legend" id="ft-legend"></div>
+      <div class="chart-row">
+        <div style="position:relative;height:200px"><canvas id="ft-pieChart"></canvas></div>
+        <div style="position:relative;" id="bar-wrap"><canvas id="ft-barChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Visão geral -->
+    <div class="tab-content" id="ft-tab-visao"><div id="ft-visao-content"></div></div>
+
+    <!-- Por cartão -->
+    <div class="tab-content" id="ft-tab-cartoes"><div id="ft-cartoes-content"></div></div>
+
+    <!-- Revisar -->
+    <div class="tab-content" id="ft-tab-revisar">
+      <p style="font-size:12px;color:var(--text3);margin-bottom:1rem">Classificações da IA — corrija pelo dropdown se necessário.</p>
+      <div class="review-list" id="ft-review-list"></div>
+    </div>
+
+    <!-- Não identificados -->
+    <div class="tab-content" id="ft-tab-outros">
+      <div class="done-msg hidden" id="ft-outros-done">✅ Tudo categorizado!</div>
+      <div id="ft-outros-chat">
+        <p style="font-size:12px;color:var(--text3);margin-bottom:.75rem">Lançamentos que a IA não identificou. Clique numa pílula ou escreva para classificar.</p>
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="ft-chat-msgs"></div>
+          <div class="chat-foot">
+            <div class="chat-progress" id="ft-chat-progress"></div>
+            <div class="chat-input-row">
+              <input class="chat-input" id="ft-chat-input" placeholder="Ex: gasolina, supermercado, seguro do carro..." onkeydown="if(event.key==='Enter'){event.preventDefault();ft_sendChat();}">
+              <button class="chat-send" id="ft-chat-send" onclick="ft_sendChat()">Enviar</button>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span id="cf-count" style="font-size:12px;color:var(--text3)"></span>
-              <button class="btn-small primary" onclick="showPage('faturas')">+ Carregar fatura</button>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;padding:8px 0;">
-            <input id="cf-search" type="text" placeholder="Buscar..." oninput="renderCartoesParcelas()"
-              style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;width:180px;font-family:var(--font);">
-            <button class="btn-small" onclick="document.getElementById('cf-search').value='';renderCartoesParcelas();">✕</button>
           </div>
         </div>
-        <div class="dre-wrap scrollbar" style="flex:1;padding:0 20px 20px;">
-          <div id="cartoes-summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;"></div>
-          <table class="dre-table" id="cartoes-table" style="min-width:600px;margin-bottom:2rem;"></table>
-        </div>
+        <div class="pills-wrap" id="ft-cat-pills"></div>
       </div>
-
-      <!-- FATURAS -->
-      <div class="page" id="page-faturas" style="overflow-y:auto;">
-        <div id="ft-upload-wrap" style="padding:20px 20px 0;">
-          <h1>💳 Analisador de Faturas <span>Itaú · até 3 cartões</span></h1>
-          <div class="upload-zone" id="ft-drop-zone" onclick="document.getElementById('ft-file-input').click()">
-            <div class="upload-icon">📂</div>
-            <div class="upload-title">Arraste até 3 faturas aqui</div>
-            <div class="upload-sub">ou clique para selecionar — .xlsx ou .csv do Itaú</div>
-          </div>
-          <input type="file" id="ft-file-input" accept=".xls,.xlsx,.csv" multiple style="display:none">
-          <div class="file-list" id="ft-file-list"></div>
-          <div class="btn-row">
-            <button class="btn-primary" id="ft-btn-process" disabled onclick="ft_processAll()">Analisar faturas</button>
-            <button class="btn-ai" id="ft-btn-ai" onclick="ft_classifyAllWithAI()">✦ Classificar com IA</button>
-          </div>
-          <div class="status" id="ft-status">
-            <span class="spinner"></span>
-            <span id="ft-status-msg"></span>
-            <div class="progress-track" id="ft-progress-track" style="display:none"><div class="progress-fill" id="ft-progress-fill" style="width:0%"></div></div>
-          </div>
-          <button id="ft-back-btn" onclick="ft_resetUpload()" style="display:none;">← Nova análise</button>
-        </div>
-        <div id="ft-results" class="hidden" style="padding:20px;">
-          <div class="metrics" id="ft-metrics"></div>
-          <div class="tab-bar">
-            <button class="tab active" onclick="ft_switchTab('cat')">Categorias</button>
-            <button class="tab" onclick="ft_switchTab('visao')">Visão geral</button>
-            <button class="tab" onclick="ft_switchTab('cartoes')">Por cartão</button>
-            <button class="tab" onclick="ft_switchTab('revisar')">Revisar <span class="badge warn" id="ft-badge-revisar">0</span></button>
-            <button class="tab" onclick="ft_switchTab('outros')">Outros</button>
-            <button class="tab" onclick="ft_switchTab('lanc')">Lançamentos</button>
-            <button class="tab" onclick="ft_switchTab('export')">Exportar</button>
-          </div>
-          <div id="ft-tabs"></div>
-          <div style="margin-top:20px;display:flex;gap:10px;">
-            <button class="btn-primary" onclick="ft_sendToDRE()">✓ Enviar para DRE</button>
-            <button class="btn-small" onclick="ft_sendAnalysis()">Chat com IA</button>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-  <!-- MODAL DE CONFIRMAÇÃO -->
-  <div id="modal-confirm" class="modal" style="display:none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modal-title"></h2>
+    <!-- Lançamentos -->
+    <div class="tab-content" id="ft-tab-lanc">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <select id="ft-cat-filter"><option value="">Todas as categorias</option></select>
+          <select id="ft-card-filter"><option value="">Todos os cartões</option></select>
+        </div>
+        <div class="filter-info" id="ft-filter-info"></div>
       </div>
-      <div class="modal-body" id="modal-body"></div>
-      <div class="modal-footer">
-        <button class="btn-small" onclick="closeModal()">Cancelar</button>
-        <button class="btn-small primary" id="modal-confirm-btn" onclick="confirmModalAction()">Confirmar</button>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Descrição</th><th>Cartão</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead>
+          <tbody id="table-body"></tbody>
+          <tfoot id="table-foot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Exportar -->
+    <div class="tab-content" id="ft-tab-export">
+      <div class="export-card">
+        <div class="export-title">CSV para CalculadoraFatura</div>
+        <div class="export-sub">Todos os lançamentos com categorias finais, no formato da sua planilha.</div>
+        <button class="btn-export" onclick="ft_exportCSV()">⬇ Baixar CSV consolidado</button>
+      </div>
+      <div class="export-card" style="border-color:rgba(59,130,246,0.5);background:rgba(59,130,246,0.06)">
+        <div class="export-title" style="color:#3b82f6">→ Enviar ao DRE</div>
+        <div class="export-sub">Atualiza a linha Cartões do mês no DRE e salva os lançamentos no histórico.</div>
+        <button class="btn-export" onclick="ft_sendToDRE()" style="border-color:#3b82f6;color:#3b82f6">Enviar ao DRE</button>
+      </div>
+      <div class="export-card">
+        <div class="export-title">Análise com Claude</div>
+        <div class="export-sub">Envia o resumo das faturas para o Claude comentar gastos e sugerir melhorias.</div>
+        <button class="btn-export" onclick="ft_sendAnalysis()">💬 Pedir análise</button>
       </div>
     </div>
   </div>
+</div>
 
-  </div> <!-- fechamento app-container -->
-
-  <!-- MODAL DE ALERTA -->
-  <div id="modal-alert" class="modal" style="display:none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="alert-title">Aviso</h2>
-      </div>
-      <div class="modal-body" id="alert-body"></div>
-      <div class="modal-footer">
-        <button class="btn-small primary" onclick="closeAlert()">OK</button>
-      </div>
-    </div>
   </div>
+</div>
 
-  <script src="app.js"></script>
+
+<script src="app.js"></script>
 </body>
 </html>
