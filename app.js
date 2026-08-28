@@ -745,9 +745,22 @@ function mergeSeed(){
   const atual = parseInt((SEED&&SEED.version)||0,10);
   if(!atual || atual<=salva) return {aplicados:0, novos:[], itens:[]};
 
-  let snap={};
-  try{ snap=JSON.parse(localStorage.getItem('drecasa_seed_snapshot')||'{}'); }catch(e){}
+  let snap=null;
+  try{ const raw=localStorage.getItem('drecasa_seed_snapshot');
+       if(raw) snap=JSON.parse(raw); }catch(e){}
+
   const novo=_flatSeed(SEED);
+
+  // Sem snapshot nao da para saber o que mudou na origem. Isso acontece
+  // com quem ja tinha dados de antes do versionamento. Sobrescrever aqui
+  // apagaria o trabalho do usuario (inclusive faturas ja lancadas), entao
+  // apenas adotamos o estado atual como base e nao tocamos em nada.
+  if(!snap){
+    localStorage.setItem('drecasa_seed_version', String(atual));
+    localStorage.setItem('drecasa_seed_snapshot', JSON.stringify(novo));
+    return {aplicados:0, novos:[], itens:[], primeiraVez:true};
+  }
+
   const mudou=[];
 
   const novosMeses=(SEED.months||[]).filter(m=>!state.months.includes(m));
@@ -760,7 +773,9 @@ function mergeSeed(){
     const p=k.split('|'), mn=p[0], sec=p[1], label=p[2];
     const val=novo[k];
     if(sec==='cartoes'){
-      if(val!=null){ state.cartoesByMonth[mn]=val; mudou.push(mn+' · Cartoes'); }
+      // fatura lancada pelo usuario tem prioridade sobre a projecao do data.json
+      const temFatura = state.faturas && state.faturas[mn] && state.faturas[mn].length;
+      if(val!=null && !temFatura){ state.cartoesByMonth[mn]=val; mudou.push(mn+' · Cartoes'); }
       return;
     }
     if(!state.dre[mn]) return;
