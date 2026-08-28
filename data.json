@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "generated": "2026-08-28",
+  "months": [
+    "Agosto 2026",
+    "Setembro 2026",
+    "Outubro 2026",
+    "Novembro 2026",
+    "Dezembro 2026"
+  ],
+  "receitas": [
+    {
+      "label": "Saldo Inicial",
+      "values": [
+        1254791.73,
+        1282999.3,
+        1313747.77,
+        1346314.69,
+        1379489.89
+      ]
+    },
+    {
+      "label": "Salario 15 Vi",
+      "values": [
+        50000,
+        50000,
+        50000,
+        50000,
+        50000
+      ]
+    },
+    {
+      "label": "Salario 30 Vi",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "label": "Ferias + 1parc 13",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "label": "Bonus + ferias",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "label": "Bekatech",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "label": "Vikatech",
+      "values": [
+        25000,
+        25000,
+        25000,
+        25000,
+        25000
+      ]
+    },
+    {
+      "label": "Reembolsos SDS/SulAmerica",
+      "values": [
+        432.0,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "label": "Novas Receitas/aplicacao",
+      "values": [
+        8000,
+        8000,
+        8000,
+        8000,
+        8000
+      ]
+    }
+  ],
+  "despesas": [
+    {
+      "label": "IPTU Sta Monica",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Contador",
+      "values": [
+        404.64,
+        404.64,
+        404.64,
+        404.64,
+        404.64
+      ],
+      "fixed": false
+    },
+    {
+      "label": "imposto vikatech",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    },
+    {
+      "label": "INSS Obra DARF",
+      "values": [
+        533.24,
+        533.24,
+        533.24,
+        533.24,
+        533.24
+      ],
+      "fixed": false
+    },
+    {
+      "label": "moveis/Adelmo",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Carro",
+      "values": [
+        6196.29,
+        6196.29,
+        6196.29,
+        6196.29,
+        6196.29
+      ],
+      "fixed": true
+    },
+    {
+      "label": "IPVA",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Jardim",
+      "values": [
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "fixed": false
+    },
+    {
+      "label": "St Monica - Cond",
+      "values": [
+        1084.1,
+        956.82,
+        1020.46,
+        1020.46,
+        1020.46
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Cpfl - St Monica",
+      "values": [
+        1224.37,
+        1032.18,
+        300,
+        300,
+        300
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Azza",
+      "values": [
+        120.62,
+        120.62,
+        120.62,
+        120.62,
+        120.62
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Provisao Cartao",
+      "values": [
+        null,
+        20000,
+        20000,
+        20000,
+        20000
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Financ Caixa",
+      "values": [
+        9302,
+        9303,
+        9304,
+        9305,
+        9306
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Plano de Saude",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Faxina",
+      "values": [
+        4000,
+        4000,
+        4000,
+        4000,
+        4000
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Baba/escolinha",
+      "values": [
+        2312.5,
+        2312.5,
+        2312.5,
+        2312.5,
+        2312.5
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Piscina",
+      "values": [
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "fixed": false
+    },
+    {
+      "label": "Festa Beni",
+      "values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "fixed": false
+    }
+  ],
+  "pix": [],
+  "faturas_hist": {},
+  "si_overrides": {
+    "Agosto 2026": 1254791.73
+  },
+  "cartoesByMonth_seed": {
+    "Agosto 2026": 122330.63,
+    "Setembro 2026": 6882.22,
+    "Outubro 2026": 5062.77,
+    "Novembro 2026": 4453.49,
+    "Dezembro 2026": 1685.18
+  }
+}

@@ -74,7 +74,7 @@
       <button class="btn-small" onclick="importJSON()">↑ Restaurar</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
       <button class="btn-small" style="color:var(--red);border-color:rgba(239,68,68,0.3)"
-        onclick="if(confirm('Apagar todos os dados e recarregar?')){localStorage.removeItem('drecasa_v4');location.reload();}">
+        onclick="if(confirm('Apagar todos os dados e recarregar?')){localStorage.removeItem('drecasa_v5');localStorage.removeItem('drecasa_seed_version');localStorage.removeItem('drecasa_seed_snapshot');location.reload();}">
         ⚠ Limpar</button>
     </div>
   </div>

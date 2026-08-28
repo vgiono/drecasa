@@ -107,55 +107,12 @@ function logout() {
 
 // Chamar verificação de auth ao carregar página
 window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(checkAuth, 100);
+  bootApp().then(() => setTimeout(checkAuth, 100));
 });
 
 // ────────────────────────────────────────────────────────────
 
-const SEED = {
-  "months": ["Agosto 2026","Setembro 2026","Outubro 2026","Novembro 2026","Dezembro 2026"],
-  "receitas": [
-    {"label":"Saldo Inicial","values":[1254791.73,1282999.30,1313747.77,1346314.69,1379489.89]},
-    {"label":"Salario 15 Vi","values":[50000,50000,50000,50000,50000]},
-    {"label":"Salario 30 Vi","values":[null,null,null,null,null]},
-    {"label":"Ferias + 1parc 13","values":[null,null,null,null,null]},
-    {"label":"Bonus + ferias","values":[null,null,null,null,null]},
-    {"label":"Bekatech","values":[null,null,null,null,null]},
-    {"label":"Vikatech","values":[25000,25000,25000,25000,25000]},
-    {"label":"Reembolsos SDS/SulAmerica","values":[432.00,null,null,null,null]},
-    {"label":"Novas Receitas/aplicacao","values":[8000,8000,8000,8000,8000]}
-  ],
-  "despesas": [
-    {"label":"IPTU Sta Monica","values":[null,null,null,null,null],"fixed":false},
-    {"label":"Contador","values":[404.64,404.64,404.64,404.64,404.64],"fixed":false},
-    {"label":"imposto vikatech","values":[null,null,null,null,null],"fixed":false},
-    {"label":"INSS Obra DARF","values":[533.24,533.24,533.24,533.24,533.24],"fixed":false},
-    {"label":"moveis/Adelmo","values":[null,null,null,null,null],"fixed":false},
-    {"label":"Carro","values":[6196.29,6196.29,6196.29,6196.29,6196.29],"fixed":true},
-    {"label":"IPVA","values":[null,null,null,null,null],"fixed":false},
-    {"label":"Jardim","values":[600,600,600,600,600],"fixed":false},
-    {"label":"St Monica - Cond","values":[1084.10,956.82,1020.46,1020.46,1020.46],"fixed":false},
-    {"label":"Cpfl - St Monica","values":[1224.37,1032.18,300,300,300],"fixed":false},
-    {"label":"Azza","values":[120.62,120.62,120.62,120.62,120.62],"fixed":false},
-    {"label":"Provisao Cartao","values":[null,20000,20000,20000,20000],"fixed":false},
-    {"label":"Financ Caixa","values":[9302,9303,9304,9305,9306],"fixed":false},
-    {"label":"Plano de Saude","values":[null,null,null,null,null],"fixed":false},
-    {"label":"Faxina","values":[4000,4000,4000,4000,4000],"fixed":false},
-    {"label":"Baba/escolinha","values":[2312.50,2312.50,2312.50,2312.50,2312.50],"fixed":false},
-    {"label":"Piscina","values":[300,300,300,300,300],"fixed":false},
-    {"label":"Festa Beni","values":[null,null,null,null,null],"fixed":false}
-  ],
-  "pix": [],
-  "faturas_hist": {},
-  "si_overrides": {"Agosto 2026": 1254791.73},
-  "cartoesByMonth_seed": {
-    "Agosto 2026": 122330.63,
-    "Setembro 2026": 6882.22,
-    "Outubro 2026": 5062.77,
-    "Novembro 2026": 4453.49,
-    "Dezembro 2026": 1685.18
-  }
-};
+let SEED = null;  // carregado de data.json em bootData()
 
 const MONTHS_ORDER = ['Outubro 2024','Novembro 2024','Dezembro 2024','Janeiro 2025','Fevereiro 2025','Marco 2025','Abril 2025','Maio 2025','Junho 2025','Julho 2025','Agosto 2025','Setembro 2025','Outubro 2025','Novembro 2025','Dezembro 2025','Janeiro 2026','Fevereiro 2026','Marco 2026','Abril 2026','Maio 2026','Junho 2026','Julho 2026','Agosto 2026','Setembro 2026','Outubro 2026','Novembro 2026','Dezembro 2026'];
 
@@ -163,11 +120,16 @@ const ML={'Janeiro':'Jan','Fevereiro':'Fev','Marco':'Mar','Abril':'Abr','Maio':'
   'Junho':'Jun','Julho':'Jul','Agosto':'Ago','Setembro':'Set','Outubro':'Out','Novembro':'Nov','Dezembro':'Dez'};
 function sm(m){const[n,a]=m.split(' ');return(ML[n]||n)+'/'+(a||'').slice(2);}
 
-let state=loadState(), viewStart=0, visibleCols=6, pixMonth=null, charts={};
+let state=null, viewStart=0, visibleCols=6, pixMonth=null, charts={};
 
 function loadState(){
   const s=localStorage.getItem('drecasa_v5');
   if(s){try{return JSON.parse(s);}catch(e){}}
+  // primeira carga: registra versao e snapshot para o proximo merge comparar
+  if(SEED && SEED.version){
+    localStorage.setItem('drecasa_seed_version', String(SEED.version));
+    localStorage.setItem('drecasa_seed_snapshot', JSON.stringify(_flatSeed(SEED)));
+  }
   return buildInitial();
 }
 
@@ -515,6 +477,7 @@ function removeRow(section,label){
 function _parseMN(mn){
   const MN=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho',
             'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(!mn || typeof mn!=='string') return null;
   const parts=mn.split(' '); return {m:MN.indexOf(parts[0])+1,y:parseInt(parts[1])};
 }
 function _fmtMN(m,y){
@@ -742,17 +705,98 @@ function fmtNum(v){if(v==null)return '';return v.toLocaleString('pt-BR',{minimum
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 // INIT
-ensureFutureMonths();  // garante apenas o mes corrente
-// Open on current month
-(function(){
+// Carrega os dados de data.json e so entao monta a tela.
+// Os dados ficam fora do codigo: data.json e lido com JSON.parse,
+// nunca executado, entao um valor errado nao vira codigo na pagina.
+async function bootData(){
+  if(SEED) return;                       // ja carregado
+  try{
+    const r = await fetch('data.json?v=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    SEED = await r.json();
+  }catch(e){
+    console.error('Falha ao carregar data.json:', e);
+    SEED = {months:[],receitas:[],despesas:[],pix:[],faturas_hist:{},
+            si_overrides:{},cartoesByMonth_seed:{}};
+    const el=document.getElementById('dre-table');
+    if(el) el.innerHTML='<tbody><tr><td style="padding:20px;color:var(--red)">'+
+      'Nao foi possivel carregar data.json. Recarregue a pagina.</td></tr></tbody>';
+  }
+}
+
+// Converte o SEED em um mapa plano {"mes|secao|label": valor} para comparacao
+function _flatSeed(seed){
+  const f={};
+  if(!seed || !seed.months) return f;
+  seed.months.forEach((mn,i)=>{
+    (seed.receitas||[]).forEach(r=>{
+      if(r.label!=='Saldo Inicial') f[mn+'|rec|'+r.label]=r.values[i]??null;
+    });
+    (seed.despesas||[]).forEach(d=>{ f[mn+'|des|'+d.label]=d.values[i]??null; });
+    f[mn+'|cartoes|']=(seed.cartoesByMonth_seed||{})[mn]??null;
+  });
+  return f;
+}
+
+// Merge de 3 vias: snapshot do data.json anterior x data.json novo x estado atual.
+// Um valor so e sobrescrito se MUDOU no data.json; senao a edicao do usuario vence.
+function mergeSeed(){
+  const salva = parseInt(localStorage.getItem('drecasa_seed_version')||'0',10);
+  const atual = parseInt((SEED&&SEED.version)||0,10);
+  if(!atual || atual<=salva) return {aplicados:0, novos:[], itens:[]};
+
+  let snap={};
+  try{ snap=JSON.parse(localStorage.getItem('drecasa_seed_snapshot')||'{}'); }catch(e){}
+  const novo=_flatSeed(SEED);
+  const mudou=[];
+
+  const novosMeses=(SEED.months||[]).filter(m=>!state.months.includes(m));
+  novosMeses.forEach(m=>ensureMonthsUpTo(m));
+
+  Object.keys(novo).forEach(k=>{
+    const inedito=!(k in snap);
+    if(!inedito && snap[k]===novo[k]) return;   // nao mudou na origem: preserva edicao
+
+    const p=k.split('|'), mn=p[0], sec=p[1], label=p[2];
+    const val=novo[k];
+    if(sec==='cartoes'){
+      if(val!=null){ state.cartoesByMonth[mn]=val; mudou.push(mn+' · Cartoes'); }
+      return;
+    }
+    if(!state.dre[mn]) return;
+    const arr = sec==='rec' ? state.dre[mn].receitas : state.dre[mn].despesas;
+    const row = arr.find(x=>x.label===label);
+    if(row) row.value=val;
+    else arr.push(sec==='des' ? {label,value:val,fixed:false} : {label,value:val});
+    mudou.push(mn+' · '+label);
+  });
+
+  localStorage.setItem('drecasa_seed_version', String(atual));
+  localStorage.setItem('drecasa_seed_snapshot', JSON.stringify(novo));
+  if(mudou.length) saveState();
+  return {aplicados:mudou.length, novos:novosMeses, itens:mudou};
+}
+
+async function bootApp(){
+  await bootData();
+  state = loadState();
+  if(!state || !state.months || !state.months.length){
+    console.error('Sem meses para exibir - data.json nao carregou.');
+    return;                              // erro ja exibido por bootData()
+  }
+  ensureFutureMonths();  // garante apenas o mes corrente
+  const mg = mergeSeed();  // traz atualizacoes do data.json sem apagar edicoes
+  if(mg.aplicados) console.log('data.json v'+SEED.version+': '+mg.aplicados+' valor(es) atualizado(s)', mg.itens);
+  // Open on current month
   const today=new Date();
   const MN=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho',
             'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const curMn=MN[today.getMonth()]+' '+today.getFullYear();
   const idx=state.months.indexOf(curMn);
   viewStart=idx>=0 ? Math.max(0,idx) : Math.max(0,state.months.length-visibleCols);
-})();
-renderDRE();
+  renderDRE();
+  restoreFaturas();
+}
 
 
 // ================================================================
