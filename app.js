@@ -193,14 +193,20 @@ function getSI(mn){
   return getSI(prev)+totalRec-totalDesp;
 }
 
+// Soma os PIX lancados no mes (aba Pix). Entra como despesa no DRE.
+function totalPix(mn){
+  return (state.pix[mn]||[]).reduce((s,p)=>s+(p.valor||0),0);
+}
+
 function calcMonth(mn){
   const d=state.dre[mn]||{receitas:[],despesas:[]};
   const totalRec=(d.receitas||[]).reduce((s,r)=>s+(r.value||0),0);
   const cartoes=state.cartoesByMonth[mn]||0;
   // totalDesp = despesa rows (incl. Provisão delta) + cartoesByMonth (fatura real)
   const despRows=(d.despesas||[]).reduce((s,d2)=>s+(d2.value||0),0);
-  const totalDesp=despRows+cartoes;
-  return{totalRec,totalDesp,cartoes};
+  const pix=totalPix(mn);
+  const totalDesp=despRows+cartoes+pix;
+  return{totalRec,totalDesp,cartoes,pix};
 }
 
 function getSaldoFinal(mn){
@@ -374,6 +380,16 @@ function renderDRE(){
       onfocus="this.classList.add('editing')"
       onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
       >${v!=null?fmtNum(v):''}</span></td>`;
+  }
+  html+='</tr>';
+
+  // PIX — calculado a partir da aba Pix, nao editavel aqui
+  html+=`<tr class="row-cartoes"><td style="padding:0 10px">
+    <span title="Soma dos PIX lancados na aba Pix">PIX</span>
+    <span class="tag-fixo" style="cursor:pointer" onclick="showPage('pix')">ver</span></td>`;
+  for(const m of visible){
+    const v=totalPix(m);
+    html+=`<td><span class="cell-val" style="opacity:.85" title="${(state.pix[m]||[]).length} lancamento(s)">${v?fmtNum(v):''}</span></td>`;
   }
   html+='</tr>';
 
@@ -641,12 +657,12 @@ function addPix(){
   if(!dia||!val||!desc)return;
   if(!state.pix[pixMonth])state.pix[pixMonth]=[];
   state.pix[pixMonth].push({dia,valor:val,descricao:desc});
-  saveState();renderPix();
+  saveState();renderPix();renderDRE();
 }
 
 function removePix(mn,idx){
   state.pix[mn].splice(idx,1);
-  saveState();renderPix();
+  saveState();renderPix();renderDRE();
 }
 
 function newPixMonth(){
