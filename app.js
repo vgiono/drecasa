@@ -502,6 +502,58 @@ function _appendMonth(next){
 // Garante que o mes atual exista. Meses futuros nao sao mais criados
 // automaticamente: quem estende o horizonte sao as parcelas das faturas
 // (ver ensureMonthsUpTo, chamada por ft_sendToDRE).
+
+// Remove meses futuros vazios do fim da lista. Um mes e considerado vazio
+// quando nao tem parcela projetada, nem PIX, nem fatura lancada — ou seja,
+// so contem despesas herdadas por copia do mes anterior.
+// Nunca remove meses do data.json, o mes corrente, nem meses passados.
+function mesesRemoviveis(){
+  const MN=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho',
+            'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const hoje=new Date();
+  const curIdx=hoje.getFullYear()*12+hoje.getMonth();
+  const base=(SEED&&SEED.months)||[];
+  const fora=[];
+  for(let i=state.months.length-1;i>=0;i--){
+    const mn=state.months[i];
+    if(base.includes(mn)) break;              // veio do data.json: para
+    const p=_parseMN(mn);
+    if(!p || p.m<1) break;
+    if((p.y*12+(p.m-1)) <= curIdx) break;     // mes atual ou passado: para
+    const temCartao=(state.cartoesByMonth[mn]||0)>0;
+    const temPix=(state.pix[mn]||[]).length>0;
+    const temFatura=(state.faturas&&state.faturas[mn]||[]).length>0;
+    if(temCartao||temPix||temFatura) break;   // tem conteudo real: para
+    fora.unshift(mn);
+  }
+  return fora;
+}
+
+function enxugarMeses(){
+  const fora=mesesRemoviveis();
+  if(!fora.length){
+    alert('Nenhum mes para remover.\n\nOs meses futuros existentes tem parcela, PIX ou fatura lancada — ou vem do data.json.');
+    return;
+  }
+  const lista=fora.length>6
+    ? fora.slice(0,3).join(', ')+' ... '+fora.slice(-2).join(', ')
+    : fora.join(', ');
+  if(!confirm('Remover '+fora.length+' mes(es) sem lancamento?\n\n'+lista+
+    '\n\nEsses meses so tem despesas copiadas do mes anterior. Eles voltam sozinhos quando voce lancar uma fatura com parcelas que os alcance.')) return;
+
+  fora.forEach(mn=>{
+    delete state.dre[mn];
+    delete state.cartoesByMonth[mn];
+    delete state.pix[mn];
+    if(state.faturas) delete state.faturas[mn];
+    if(state.siOverrides) delete state.siOverrides[mn];
+  });
+  state.months=state.months.filter(m=>!fora.includes(m));
+  viewStart=Math.max(0,Math.min(viewStart,state.months.length-visibleCols));
+  saveState();
+  renderDRE();
+}
+
 function ensureFutureMonths(){
   const today=new Date();
   const MN=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho',
