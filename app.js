@@ -1069,7 +1069,9 @@ function ft_parseRows(rows, card) {
       const pm = parcText.match(/(\d+)\s*de\s*(\d+)/i);
       if (pm) { pa = parseInt(pm[1]); pt = parseInt(pm[2]); }
     } else {
-      const lm = lancamento.match(/^(.+?)\s+(\d{2})\/(\d{2})\s*$/);
+      // \s* e nao \s+: o Itau trunca a descricao e cola a parcela sem espaco
+      // ex: "Pag*perfecthomedec11/18", "Mercadolivre*movei09/10"
+      const lm = lancamento.match(/^(.+?)\s*(\d{2})\/(\d{2})\s*$/);
       if (lm) { pa = parseInt(lm[2]); pt = parseInt(lm[3]); desc = lm[1].trim(); }
     }
 
