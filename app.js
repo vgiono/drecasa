@@ -536,14 +536,31 @@ function _appendMonth(next){
   };
 }
 
+// Garante que o mes atual exista. Meses futuros nao sao mais criados
+// automaticamente: quem estende o horizonte sao as parcelas das faturas
+// (ver ensureMonthsUpTo, chamada por ft_sendToDRE).
 function ensureFutureMonths(){
   const today=new Date();
   const MN=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho',
             'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  for(let i=0;i<=12;i++){
-    const d=new Date(today.getFullYear(),today.getMonth()+i,1);
-    const mn=MN[d.getMonth()]+' '+d.getFullYear();
-    if(!state.months.includes(mn)) _appendMonth(mn);
+  const mn=MN[today.getMonth()]+' '+today.getFullYear();
+  if(!state.months.includes(mn)) ensureMonthsUpTo(mn);
+}
+
+// Cria todos os meses ate 'alvo' inclusive, preenchendo os buracos.
+// Nao faz nada se o mes ja existe ou se e anterior ao ultimo.
+function ensureMonthsUpTo(alvo){
+  if(!alvo || state.months.includes(alvo)) return;
+  const a=_parseMN(alvo);
+  if(!a) return;
+  let guard=0;
+  while(guard++ < 240){
+    const last=state.months[state.months.length-1];
+    const l=_parseMN(last);
+    if(!l) return;
+    if(l.y > a.y || (l.y===a.y && l.m >= a.m)) return; // ja passou do alvo
+    _appendMonth(_nextMN(last));
+    if(state.months[state.months.length-1]===alvo) return;
   }
 }
 
@@ -725,7 +742,7 @@ function fmtNum(v){if(v==null)return '';return v.toLocaleString('pt-BR',{minimum
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 // INIT
-ensureFutureMonths();  // always keep 12 months ahead
+ensureFutureMonths();  // garante apenas o mes corrente
 // Open on current month
 (function(){
   const today=new Date();
@@ -1340,7 +1357,11 @@ function ft_sendToDRE(){
     const futMn=MN[futM]+' '+futY;
     const proj=unique.filter(l=>i<=l.pt-l.pa).reduce((s,l)=>s+l.val,0);
     state.cartoesByMonth[futMn]=Math.round(proj*100)/100;
+    ensureMonthsUpTo(futMn);  // horizonte do DRE acompanha a ultima parcela
   }
+
+  // o mes da propria fatura tambem precisa existir
+  ensureMonthsUpTo(mn);
 
   saveState();
 
