@@ -115,36 +115,56 @@ window.addEventListener('DOMContentLoaded', function() {
 // ────────────────────────────────────────────────────────────
 const SEED = {
   receitas: [
-    { label: 'Salário 15 Vi', values: [0] },
-    { label: 'Vikatech', values: [0] },
-    { label: 'Novas Receitas/aplicação', values: [0] },
+    { label: 'Saldo Inicial', values: [1254791.73, 1282999.30, 1313747.77, 1346314.69, 1379489.89] },
+    { label: 'Salario 15 Vi', values: [50000, 50000, 50000, 50000, 50000] },
+    { label: 'Salario 30 Vi', values: [0, 0, 0, 0, 0] },
+    { label: 'Ferias + 1parc 13', values: [0, 0, 0, 0, 0] },
+    { label: 'Bonus + ferias', values: [0, 0, 0, 0, 0] },
+    { label: 'Bekatech', values: [0, 0, 0, 0, 0] },
+    { label: 'Vikatech', values: [25000, 25000, 25000, 25000, 25000] },
+    { label: 'Reembolsos SDS/SulAmerica', values: [432.00, 0, 0, 0, 0] },
+    { label: 'Novas Receitas/aplicacao', values: [8000, 8000, 8000, 8000, 8000] },
   ],
   despesas: [
-    { label: 'Contador', values: [0], fixed: false },
-    { label: 'INSS Obra DARF', values: [0], fixed: false },
-    { label: 'Carro', values: [0], fixed: true },
-    { label: 'Jardim', values: [0], fixed: false },
-    { label: 'St Monica - Cond', values: [1084.10], fixed: false },
-    { label: 'Cpfl - St Monica', values: [1224.37], fixed: false },
-    { label: 'Azza', values: [120.62], fixed: false },
-    { label: 'Provisão Cartão', values: [0], fixed: false },
-    { label: 'Financ Caixa', values: [0], fixed: false },
-    { label: 'Faxina', values: [0], fixed: false },
-    { label: 'Babá/escolinha', values: [0], fixed: false },
-    { label: 'Piscina', values: [0], fixed: false },
+    { label: 'IPTU Sta Monica', values: [0, 0, 0, 0, 0], fixed: false },
+    { label: 'Contador', values: [404.64, 404.64, 404.64, 404.64, 404.64], fixed: false },
+    { label: 'imposto vikatech', values: [0, 0, 0, 0, 0], fixed: false },
+    { label: 'INSS Obra DARF', values: [533.24, 533.24, 533.24, 533.24, 533.24], fixed: false },
+    { label: 'moveis/Adelmo', values: [0, 0, 0, 0, 0], fixed: false },
+    { label: 'Carro', values: [6196.29, 6196.29, 6196.29, 6196.29, 6196.29], fixed: true },
+    { label: 'IPVA', values: [0, 0, 0, 0, 0], fixed: false },
+    { label: 'Jardim', values: [600, 600, 600, 600, 600], fixed: false },
+    { label: 'St Monica - Cond', values: [1084.10, 956.82, 1020.46, 1020.46, 1020.46], fixed: false },
+    { label: 'Cpfl - St Monica', values: [1224.37, 1032.18, 300, 300, 300], fixed: false },
+    { label: 'Azza', values: [120.62, 120.62, 120.62, 120.62, 120.62], fixed: false },
+    { label: 'Provisao Cartao', values: [0, 20000, 20000, 20000, 20000], fixed: false },
+    { label: 'Financ Caixa', values: [9302, 9303, 9304, 9305, 9306], fixed: false },
+    { label: 'Plano de Saude', values: [0, 0, 0, 0, 0], fixed: false },
+    { label: 'Faxina', values: [4000, 4000, 4000, 4000, 4000], fixed: false },
+    { label: 'Baba/escolinha', values: [2312.50, 2312.50, 2312.50, 2312.50, 2312.50], fixed: false },
+    { label: 'Piscina', values: [300, 300, 300, 300, 300], fixed: false },
+    { label: 'Festa Beni', values: [0, 0, 0, 0, 0], fixed: false },
   ],
   cartoesByMonth_seed: {
     'Agosto 2026': 122330.63,
+    'Setembro 2026': 6882.22,
+    'Outubro 2026': 5062.77,
+    'Novembro 2026': 4453.49,
+    'Dezembro 2026': 1685.18,
   },
   pix: [],
   faturas_hist: {},
   si_overrides: {
-    'Agosto 2026': 0,
+    'Agosto 2026': 1254791.73,
   },
 };
 
 const MONTHS_ORDER = [
   'Agosto 2026',
+  'Setembro 2026',
+  'Outubro 2026',
+  'Novembro 2026',
+  'Dezembro 2026',
 ];
 
 const MONTH_LABELS = {
@@ -933,37 +953,244 @@ function renderCartoesParcelas() {
 }
 
 // ────────────────────────────────────────────────────────────
-// FATURAS (Stub for now)
+// FATURAS - parsing e projecao de parcelas
 // ────────────────────────────────────────────────────────────
+let ft_files = [];
+let ft_lancamentos = [];
+let ft_cards = [];
+
 function restoreFaturas() {
   if (!state.fatura_lancamentos || !state.fatura_lancamentos.length) return;
-  document.getElementById('ft-results').classList.remove('hidden');
+  if (ft_lancamentos.length) return;
+  ft_lancamentos = state.fatura_lancamentos.map(l => ({ ...l }));
+  ft_cards = [...(state.fatura_cards || [])];
+  ft_refreshAll();
+  const uw = document.getElementById('ft-upload-wrap');
+  const bb = document.getElementById('ft-back-btn');
+  const res = document.getElementById('ft-results');
+  if (uw) uw.style.display = 'none';
+  if (bb) bb.style.display = 'flex';
+  if (res) res.classList.remove('hidden');
 }
 
-function ft_processAll() {
-  alertModal('Funcionalidade de upload de faturas será integrada com o bot.');
+function ft_addFiles(fs) {
+  fs.forEach(f => { if (ft_files.length < 3) ft_files.push(f); });
+  ft_renderFiles();
+}
+
+function ft_removeFile(i) { ft_files.splice(i, 1); ft_renderFiles(); }
+
+function ft_renderFiles() {
+  const el = document.getElementById('ft-file-list');
+  if (!el) return;
+  el.innerHTML = ft_files.map((f, i) =>
+    `<div class="file-item"><span>${escHtml(f.name)}</span>` +
+    `<button onclick="ft_removeFile(${i})">remover</button></div>`).join('');
+  const btn = document.getElementById('ft-btn-process');
+  if (btn) btn.disabled = ft_files.length === 0;
+}
+
+function ft_showStatus(msg, pct) {
+  const s = document.getElementById('ft-status');
+  const m = document.getElementById('ft-status-msg');
+  if (s) s.style.display = 'flex';
+  if (m) m.textContent = msg;
+  const tr = document.getElementById('ft-progress-track');
+  const fl = document.getElementById('ft-progress-fill');
+  if (tr && pct != null) { tr.style.display = 'block'; fl.style.width = pct + '%'; }
+}
+
+function ft_hideStatus() {
+  const s = document.getElementById('ft-status');
+  if (s) s.style.display = 'none';
+}
+
+function ft_readFile(f) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
+        const sh = wb.Sheets[wb.SheetNames[0]];
+        res(XLSX.utils.sheet_to_json(sh, { header: 1, raw: true }));
+      } catch (err) { console.error(err); res([]); }
+    };
+    r.readAsBinaryString(f);
+  });
+}
+
+function ft_getCardName(rows, idx, filename) {
+  for (const row of rows.slice(0, 20)) {
+    for (const cell of row) {
+      const s = String(cell || '');
+      if (/black|infinite|the one|platinum|gold/i.test(s)) return s.trim().slice(0, 30);
+    }
+  }
+  return filename.replace(/\.[^.]+$/, '').slice(0, 30) || ('Cartao ' + (idx + 1));
+}
+
+// Extrai lancamentos, detectando parcelas em "DESC 03/12" ou "Parcela 3 de 12"
+function ft_parseRows(rows, card) {
+  let sec = false, isXLS = false;
+
+  for (const row of rows) {
+    const r0 = row[0], r1 = row[1], r2 = row[2], r3 = row[3], r4 = row[4];
+
+    if (String(r1 || '').trim() === 'Data' && /^lan\u00e7amento$/i.test(String(r2 || '').trim())) {
+      isXLS = true; sec = true; continue;
+    }
+    if (String(r0 || '').trim() === 'Data' && /^lan\u00e7amento$/i.test(String(r1 || '').trim())) {
+      isXLS = false; sec = true; continue;
+    }
+    if (/lan\u00e7amentos/i.test(String(r1 || ''))) continue;
+    if (/total (nacional|internacional|geral)/i.test(String(isXLS ? r1 : r0) || '')) { sec = false; continue; }
+    if (!sec) continue;
+
+    let date, lancamento, parcText, val;
+
+    if (isXLS) {
+      if (!(r1 instanceof Date) && !String(r1 || '').match(/\d/)) continue;
+      date = r1 instanceof Date ? r1.toLocaleDateString('pt-BR') : String(r1 || '').trim();
+      lancamento = String(r2 || '').trim();
+      parcText = (typeof r3 === 'string' && /parcela/i.test(r3)) ? r3 : null;
+      val = parcText ? r4 : (typeof r3 === 'number' ? r3 : r4);
+    } else {
+      date = r0 instanceof Date ? r0.toLocaleDateString('pt-BR') : String(r0 || '').trim();
+      lancamento = String(r1 || '').trim();
+      parcText = (typeof r2 === 'string' && /parcela/i.test(r2)) ? r2 : null;
+      val = parcText ? r3 : (typeof r2 === 'number' ? r2 : r3);
+    }
+
+    if (!lancamento || typeof val !== 'number') continue;
+    if (/pagamento efetuado/i.test(lancamento)) continue;
+
+    let pa = null, pt = null, desc = lancamento;
+    if (parcText) {
+      const pm = parcText.match(/(\d+)\s*de\s*(\d+)/i);
+      if (pm) { pa = parseInt(pm[1]); pt = parseInt(pm[2]); }
+    } else {
+      const lm = lancamento.match(/^(.+?)\s+(\d{2})\/(\d{2})\s*$/);
+      if (lm) { pa = parseInt(lm[2]); pt = parseInt(lm[3]); desc = lm[1].trim(); }
+    }
+
+    ft_lancamentos.push({
+      date, desc, orig: lancamento, val,
+      pa, pt, pr: (pa && pt) ? pt - pa : null,
+      card, cat: 'Outros'
+    });
+  }
+}
+
+async function ft_processAll() {
+  if (!ft_files.length) return alertModal('Selecione ao menos uma fatura.');
+  ft_lancamentos = []; ft_cards = [];
+
+  for (let i = 0; i < ft_files.length; i++) {
+    ft_showStatus(`Lendo ${ft_files[i].name}...`, Math.round(i / ft_files.length * 100));
+    const rows = await ft_readFile(ft_files[i]);
+    if (!rows.length) continue;
+    const card = ft_getCardName(rows, i, ft_files[i].name);
+    ft_cards.push(card);
+    ft_parseRows(rows, card);
+  }
+
+  ft_hideStatus();
+
+  if (!ft_lancamentos.length) {
+    return alertModal('Nenhum lancamento reconhecido. Confira se e o extrato do Itau (.xlsx ou .csv).');
+  }
+
+  state.fatura_lancamentos = ft_lancamentos.map(l => ({ ...l }));
+  state.fatura_cards = [...ft_cards];
+  saveState();
+
+  document.getElementById('ft-upload-wrap').style.display = 'none';
+  document.getElementById('ft-back-btn').style.display = 'flex';
+  document.getElementById('ft-results').classList.remove('hidden');
+  ft_refreshAll();
+}
+
+function ft_refreshAll() {
+  const total = ft_lancamentos.reduce((s, l) => s + l.val, 0);
+  const parc = ft_lancamentos.filter(l => l.pa).length;
+  const el = document.getElementById('ft-metrics');
+  if (el) {
+    let m = `<div class="metric"><div class="metric-label">Total</div><div class="metric-value red">R$ ${fmtBrl(total)}</div></div>
+      <div class="metric"><div class="metric-label">Lancamentos</div><div class="metric-value">${ft_lancamentos.length}</div></div>
+      <div class="metric"><div class="metric-label">Parcelados</div><div class="metric-value">${parc}</div></div>`;
+    ft_cards.forEach(c => {
+      const t = ft_lancamentos.filter(l => l.card === c).reduce((s, l) => s + l.val, 0);
+      m += `<div class="metric"><div class="metric-label">${escHtml(c)}</div><div class="metric-value" style="font-size:15px">R$ ${fmtBrl(t)}</div></div>`;
+    });
+    el.innerHTML = m;
+  }
+}
+
+// Grava a fatura no mes e projeta as parcelas restantes nos meses seguintes
+function ft_sendToDRE() {
+  if (!ft_lancamentos.length) return alertModal('Nenhuma fatura carregada.');
+
+  const mn = promptModal('Mes da fatura (ex: Agosto 2026):', MONTHS_ORDER[MONTHS_ORDER.length - 1]);
+  if (!mn) return;
+  {
+    const parts = mn.trim().split(' ');
+    const nomes = Object.keys(MONTH_LABELS);
+    const baseM = nomes.indexOf(parts[0]) + 1;
+    const baseY = parseInt(parts[1]);
+    if (baseM < 1 || !baseY) return alertModal('Mes invalido. Use o formato "Agosto 2026".');
+
+    const total = ft_lancamentos.reduce((s, l) => s + (l.val || 0), 0);
+    state.cartoesByMonth[mn] = Math.round(total * 100) / 100;
+    state.faturas = state.faturas || {};
+    state.faturas[mn] = ft_lancamentos.filter(l => l.val !== 0)
+      .map(l => ({ data: l.date, lancamento: l.orig || l.desc, valor: l.val }));
+
+    // Dedup: mesma compra pode aparecer repetida entre cartoes
+    const map = {};
+    ft_lancamentos.filter(l => l.pa && l.pt && l.val > 0).forEach(l => {
+      const key = (l.date || '') + '|' + (l.desc || '').toLowerCase() + '|' + Math.round(l.val) + '|' + l.pt;
+      if (!map[key] || l.pa < map[key].pa) map[key] = l;
+    });
+    const unique = Object.values(map);
+    const maxPr = unique.length ? Math.max(...unique.map(l => l.pt - l.pa)) : 0;
+
+    // Cada mes futuro recebe a soma das parcelas ainda vivas naquele mes
+    for (let i = 1; i <= maxPr; i++) {
+      const totalM = baseM - 1 + i;
+      const futM = totalM % 12 + 1;
+      const futY = baseY + Math.floor(totalM / 12);
+      const futMn = nomes[futM - 1] + ' ' + futY;
+      const proj = unique.filter(l => i <= l.pt - l.pa).reduce((s, l) => s + l.val, 0);
+      state.cartoesByMonth[futMn] = Math.round(proj * 100) / 100;
+      if (!MONTHS_ORDER.includes(futMn)) MONTHS_ORDER.push(futMn);
+    }
+
+    saveState();
+    showPage('dre');
+    renderDRE();
+    alertModal(`Fatura de ${mn}: R$ ${fmtBrl(total)}. ${unique.length} parcelamento(s) projetado(s) por ate ${maxPr} mes(es).`);
+  }
 }
 
 function ft_classifyAllWithAI() {
-  alertModal('Classificação com IA será integrada com o bot.');
-}
-
-function ft_sendToDRE() {
-  alertModal('Integração com bot será adicionada em breve.');
+  alertModal('Classificacao com IA sera integrada com o bot.');
 }
 
 function ft_sendAnalysis() {
-  alertModal('Chat com IA será integrado com o bot.');
+  alertModal('Chat com IA sera integrado com o bot.');
 }
 
 function ft_resetUpload() {
+  ft_files = [];
+  ft_renderFiles();
   document.getElementById('ft-upload-wrap').style.display = 'block';
   document.getElementById('ft-back-btn').style.display = 'none';
   document.getElementById('ft-results').classList.add('hidden');
 }
 
 function ft_switchTab(name) {
-  // Stub
+  document.querySelectorAll('#page-faturas .tab').forEach(t => t.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
 }
 
 // ────────────────────────────────────────────────────────────
@@ -971,4 +1198,23 @@ function ft_switchTab(name) {
 // ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderDRE();
+
+  const inp = document.getElementById('ft-file-input');
+  if (inp) inp.addEventListener('change', e => {
+    ft_addFiles([...e.target.files]);
+    e.target.value = '';
+  });
+
+  const dz = document.getElementById('ft-drop-zone');
+  if (dz) {
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('dragover');
+      ft_addFiles([...e.dataTransfer.files]);
+    });
+  }
+
+  restoreFaturas();
 });
